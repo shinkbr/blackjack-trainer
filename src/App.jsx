@@ -38,7 +38,7 @@ export default function App() {
       : [...state.filters, type];
     deal("filters", { filters });
   }
-  let explanation = "";
+  let explanation = "Choose an action to check your basic strategy.";
   if (answer) {
     const correct = answer.correctAction;
     const label =
@@ -238,7 +238,7 @@ export default function App() {
                 ? answer.isCorrect
                   ? "Correct!"
                   : `Not quite. The correct action is ${answer.correctAction.toLowerCase()}.`
-                : ""}
+                : "Your next good decision starts here."}
             </strong>
             <p id="explanation">{explanation}</p>
           </div>
