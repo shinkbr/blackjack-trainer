@@ -250,15 +250,6 @@ export default function App() {
         <details>
           <summary>Table rules & strategy reference</summary>
           <p id="rules-description">{rulesDescription(state.mode)}</p>
-          <p>
-            This drill uses total-dependent basic strategy for the initial
-            two-card decision. Free Bet mode covers the original real-money
-            hand, not the subsequent free-token hands after splitting, which use
-            a different strategy. Natural blackjacks are skipped. Hands are
-            independently randomized across the selected categories; this is not
-            a shoe simulation. With no toggles selected, all three categories
-            are included. Hard and soft count filters exclude pairs.
-          </p>
           <p id="house-edge">{`The house edge under this strategy is ${{ s17: "0.28", h17: "0.47", freebet: "1.04" }[state.mode]} %.`}</p>
           <p id="strategy-source">
             Reference:{" "}
