@@ -246,7 +246,14 @@ export default function App() {
           </p>
           <StrategyReference mode={state.mode} />
         </details>
-        <span className="footer-mark">♠ &nbsp; PRACTICE, THEN REPEAT.</span>
+        <a
+          className="footer-link"
+          href="https://github.com/shinkbr/blackjack-trainer"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
       </footer>
     </main>
   );
