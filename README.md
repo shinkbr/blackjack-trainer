@@ -1,17 +1,17 @@
 # Blackjack Trainer
 
-A React 19.2.8 practice table for initial-hand blackjack basic strategy. Includes S17, H17, and Free Bet modes, category filters, keyboard shortcuts, session accuracy, and strategy reference charts.
+A React practice table for initial-hand blackjack basic strategy, with S17, H17, and Free Bet modes, category filters, session accuracy, and strategy charts.
 
 ## Development
 
-Use Node.js 22.22.2+ or 24.15+ LTS and pnpm 11.
+Requires Node.js and pnpm; see `package.json` for supported versions.
 
 ```sh
 pnpm install
 pnpm dev
 ```
 
-Open the local URL printed by Vite. Press 1–5 to answer; use Next hand to continue. Changing table rules resets the session count. With no category filters selected, all categories are included.
+Open the local URL printed by Vite. Press 1–5 to answer, then use Next hand to continue. Changing rules resets the count; changing filters preserves it. With no filters selected, all categories are included.
 
 ## Checks and production build
 
@@ -23,11 +23,11 @@ pnpm build
 pnpm preview
 ```
 
-Deploy the generated `dist/` directory to a static host. Asset URLs are relative, supporting hosting under a subdirectory. The source `index.html` requires Vite; do not open it directly as a file.
+Deploy `dist/` to a static host. Relative asset URLs support subdirectories. Use Vite to serve the source; do not open `index.html` directly.
 
 ## GitHub Pages
 
-In the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. The workflow in `.github/workflows/deploy.yml` installs dependencies with the pinned pnpm version, checks lint and formatting, runs tests, builds the site, and deploys `dist/` on pushes to `main`. You can also run it manually from the Actions tab with `main` selected.
+In **Settings → Pages → Build and deployment**, select **GitHub Actions**. The workflow checks lint, formatting, and tests before building and deploying pushes to `main`. It also supports manual runs on `main`.
 
 The deployed site is available at <https://shinkbr.github.io/blackjack-trainer/> after the first successful deployment.
 
@@ -40,6 +40,7 @@ The deployed site is available at <https://shinkbr.github.io/blackjack-trainer/>
 - `src/cards.js`: shared card ranks, suits, and values.
 - `src/game.js`: card generation and session transitions.
 - `src/strategy.js`: rule tables and strategy decisions.
-- `tests/`: focused strategy, session, interaction, and browser-tool regression checks. UI and hook tests use fixed hands; hand-generation tests inject a deterministic random source.
+- `src/rules.js`: table-rule descriptions for each mode.
+- `tests/`: strategy, session, interaction, and browser-tool regression checks.
 
 Licensed under the [MIT license](LICENSE).
