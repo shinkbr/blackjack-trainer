@@ -65,7 +65,7 @@ export default function App() {
     <main>
       <header>
         <a className="brand" href="./">
-          <span className="brand-icon">♠</span> BLACKJACK
+          <span className="brand-icon">♠</span> BLACKJACK TRAINER
           <span className="brand-sub">/ BASIC STRATEGY</span>
         </a>
         <span className="practice">PRACTICE TABLE</span>
