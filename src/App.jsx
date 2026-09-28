@@ -92,6 +92,7 @@ export default function App() {
           <option value="h17">Standard H17</option>
           <option value="freebet">Free Bet Blackjack (H17)</option>
         </select>
+        <span id="mode-summary">Switching modes resets the count.</span>
       </section>
       <section className="focus-controls" aria-label="Practice hand types">
         <fieldset>
@@ -261,7 +262,7 @@ export default function App() {
               Wizard of Odds —{" "}
               {free ? "Free Bet Blackjack" : "4–8 deck basic strategy"} ↗
             </a>
-            . Switching modes resets the count.
+            .
           </p>
           <StrategyReference mode={state.mode} />
         </details>

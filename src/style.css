@@ -497,9 +497,6 @@ footer details {
   margin-top: 26px;
   color: var(--ink);
 }
-.strategy-reference .strategy-order {
-  font-size: 14px;
-}
 .strategy-legend {
   display: flex;
   flex-wrap: wrap;
@@ -790,7 +787,15 @@ footer details {
 .actions strong {
   overflow-wrap: normal;
 }
+#mode-summary {
+  font-size: 13px;
+  color: var(--muted);
+}
 @media (max-width: 720px) {
+  #mode-summary {
+    flex-basis: 100%;
+    font-size: 12px;
+  }
   .actions strong {
     font-size: 15px;
   }

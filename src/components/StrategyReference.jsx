@@ -15,9 +15,7 @@ export default function StrategyReference({ mode }) {
       id="strategy-reference"
       aria-label="Basic strategy tables"
     >
-      <p className="strategy-order">
-        <strong>{ruleModes[mode].name}</strong>
-      </p>
+      <h2>{ruleModes[mode].name} Strategy</h2>
       <p className="strategy-legend">
         <span className="move-H">H · Hit</span>
         <span className="move-S">S · Stand</span>
