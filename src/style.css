@@ -591,10 +591,6 @@ footer details {
   background: #fff;
   color: #6b7770;
 }
-.strategy-block .omitted {
-  font-size: 14px;
-  margin-top: 9px;
-}
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -791,18 +787,10 @@ footer details {
   outline: 3px solid #b58b3b;
   outline-offset: 3px;
 }
-#mode-summary {
-  font-size: 13px;
-  color: var(--muted);
-}
 .actions strong {
   overflow-wrap: normal;
 }
 @media (max-width: 720px) {
-  #mode-summary {
-    flex-basis: 100%;
-    font-size: 12px;
-  }
   .actions strong {
     font-size: 15px;
   }

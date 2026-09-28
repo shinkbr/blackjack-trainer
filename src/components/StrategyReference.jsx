@@ -4,28 +4,10 @@ export default function StrategyReference({ mode }) {
   const free = mode === "freebet";
   const tables = strategyTables(mode);
   const sections = [
-    [
-      "hard",
-      "Hard count",
-      "Check pairs and surrender before using these actions.",
-    ],
-    [
-      "soft",
-      "Soft count",
-      "A = ace counted as 11. For example, A7 is soft 18.",
-    ],
-    [
-      "pairs",
-      "Pair splitting",
-      "TT means 10,10; J,J; Q,Q; or K,K. Mixed ranks are hard 20. A dash means use the hard or soft table.",
-    ],
-    [
-      "surrender",
-      "Surrender",
-      mode === "h17"
-        ? "Hard totals only. Surrender 88 against A; split 88 against every other dealer card."
-        : "Hard totals only. Exclude 88 from 16: split instead.",
-    ],
+    ["hard", "Hard count"],
+    ["soft", "Soft count"],
+    ["pairs", "Pair splitting"],
+    ["surrender", "Surrender"],
   ];
   return (
     <section
@@ -34,11 +16,7 @@ export default function StrategyReference({ mode }) {
       aria-label="Basic strategy tables"
     >
       <p className="strategy-order">
-        <strong>{ruleModes[mode].name}</strong> ·{" "}
-        {free
-          ? "Initial real-money hand. Check pairs, then hard or soft count."
-          : "Check surrender, then pairs, then hard or soft count."}{" "}
-        Columns show the dealer’s upcard.
+        <strong>{ruleModes[mode].name}</strong>
       </p>
       <p className="strategy-legend">
         <span className="move-H">H · Hit</span>
@@ -51,7 +29,7 @@ export default function StrategyReference({ mode }) {
           <span className="move-R">R · Surrender</span>
         )}
       </p>
-      {sections.map(([key, title, note]) => (
+      {sections.map(([key, title]) => (
         <section
           key={key}
           className="strategy-block"
@@ -122,7 +100,6 @@ export default function StrategyReference({ mode }) {
                   </tbody>
                 </table>
               </div>
-              <p className="omitted">{note}</p>
             </>
           )}
         </section>

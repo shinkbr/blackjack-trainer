@@ -38,7 +38,7 @@ export default function App() {
       : [...state.filters, type];
     deal("filters", { filters });
   }
-  let explanation = "Choose an action to check your basic strategy.";
+  let explanation = "";
   if (answer) {
     const correct = answer.correctAction;
     const label =
@@ -92,11 +92,6 @@ export default function App() {
           <option value="h17">Standard H17</option>
           <option value="freebet">Free Bet Blackjack (H17)</option>
         </select>
-        <span id="mode-summary">
-          {free
-            ? "Free doubles & splits · Dealer 22 pushes · No surrender"
-            : `Dealer ${mode.dealer} · Late surrender`}
-        </span>
       </section>
       <section className="focus-controls" aria-label="Practice hand types">
         <fieldset>
@@ -242,7 +237,7 @@ export default function App() {
                 ? answer.isCorrect
                   ? "Correct!"
                   : `Not quite. The correct action is ${answer.correctAction.toLowerCase()}.`
-                : "Your next good decision starts here."}
+                : ""}
             </strong>
             <p id="explanation">{explanation}</p>
           </div>
