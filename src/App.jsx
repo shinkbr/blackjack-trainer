@@ -15,21 +15,6 @@ export default function App() {
   const percent = state.answeredCount
     ? Math.round((state.correctCount / state.answeredCount) * 100)
     : 0;
-  const hints = {
-    Hit: "Take a card",
-    Stand: "Keep your hand",
-    Double: freeDouble
-      ? "House funds extra bet"
-      : free
-        ? "Use your own bet"
-        : "Double & take one",
-    Split: freeSplit
-      ? "House funds new hand"
-      : info.pair
-        ? "Make two hands"
-        : "Pairs only",
-    Surrender: free ? "Not available" : "Give up half",
-  };
   function toggleFilter(type) {
     const filters = state.filters.includes(type)
       ? state.filters.filter((item) => item !== type)
@@ -218,7 +203,6 @@ export default function App() {
                     ? "Free split"
                     : action}
               </strong>
-              <small>{hints[action]}</small>
             </button>
           ))}
         </div>

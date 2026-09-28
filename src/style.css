@@ -253,10 +253,6 @@ button {
   margin-bottom: 7px;
   font-weight: 600;
 }
-.actions small {
-  font-size: 12px;
-  color: var(--muted);
-}
 kbd {
   float: right;
   font: 11px Arial;
@@ -429,9 +425,6 @@ details a {
   }
   .actions strong {
     font-size: 16px;
-  }
-  .actions small {
-    font-size: 11px;
   }
   kbd,
   .keyboard-hint {
