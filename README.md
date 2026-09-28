@@ -16,8 +16,9 @@ Open the local URL printed by Vite. Press 1–5 to answer; use Next hand to cont
 ## Checks and production build
 
 ```sh
-pnpm test
+pnpm lint
 pnpm format:check
+pnpm test
 pnpm build
 pnpm preview
 ```
@@ -26,7 +27,7 @@ Deploy the generated `dist/` directory to a static host. Asset URLs are relative
 
 ## GitHub Pages
 
-In the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. The workflow in `.github/workflows/deploy.yml` installs dependencies with the pinned pnpm version, runs tests, builds the site, and deploys `dist/` on pushes to `main`. You can also run it manually from the Actions tab with `main` selected.
+In the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. The workflow in `.github/workflows/deploy.yml` installs dependencies with the pinned pnpm version, checks lint and formatting, runs tests, builds the site, and deploys `dist/` on pushes to `main`. You can also run it manually from the Actions tab with `main` selected.
 
 The deployed site is available at <https://shinkbr.github.io/blackjack-trainer/> after the first successful deployment.
 
