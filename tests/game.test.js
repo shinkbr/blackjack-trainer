@@ -1,77 +1,178 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import {
-  actions,
   createSession,
   drawHand,
   rankHandInfo,
+  readHand,
   sessionReducer,
 } from "../src/game.js";
-import { strategy } from "../src/strategy.js";
+import { makeHand, makeSession } from "./fixtures.js";
 
-const card = (rank) => ({
-  rank,
-  value: rank === "A" ? 11 : ["J", "Q", "K"].includes(rank) ? 10 : Number(rank),
-  suit: "♠",
-});
-const hand = (a, b, dealer) => ({
-  a: card(a),
-  b: card(b),
-  dealer: card(dealer),
-});
 describe("practice session", () => {
-  it("scores once, rejects duplicate answers, and preserves scores on a new hand", () => {
-    let state = { ...createSession(), hand: hand("10", "6", "10") };
-    state = sessionReducer(state, { type: "answer", action: "Surrender" });
-    expect(state.correctCount).toBe(1);
-    expect(state.answeredCount).toBe(1);
+  it.each([
+    ["Surrender", true, 1],
+    ["Hit", false, 0],
+  ])("scores a %s answer", (action, isCorrect, correctCount) => {
+    const state = makeSession();
+    const next = sessionReducer(state, { type: "answer", action });
+    expect(next).toMatchObject({
+      answer: { chosen: action, correctAction: "Surrender", isCorrect },
+      answeredCount: 1,
+      correctCount,
+    });
+    expect(state).toEqual(makeSession());
+  });
+
+  it("rejects duplicate answers", () => {
+    const state = sessionReducer(makeSession(), {
+      type: "answer",
+      action: "Hit",
+    });
     expect(() =>
       sessionReducer(state, { type: "answer", action: "Hit" }),
-    ).toThrow();
-    state = sessionReducer(state, { type: "deal", hand: hand("A", "7", "6") });
-    expect(state.answer).toBeNull();
-    expect(state.handNumber).toBe(2);
-    expect(state.correctCount).toBe(1);
-    state = sessionReducer(state, {
-      type: "mode",
-      mode: "h17",
-      hand: state.hand,
+    ).toThrow("Deal the next hand before answering again.");
+  });
+
+  it("preserves scores when dealing another hand", () => {
+    const state = sessionReducer(makeSession(), {
+      type: "answer",
+      action: "Surrender",
     });
-    expect(state.handNumber).toBe(1);
-    expect(state.answeredCount).toBe(0);
+    const hand = makeHand("A", "7", "6");
+    expect(sessionReducer(state, { type: "deal", hand })).toMatchObject({
+      hand,
+      answer: null,
+      handNumber: 2,
+      correctCount: 1,
+      answeredCount: 1,
+    });
   });
-  it("rejects unavailable actions and respects rank-based pairs", () => {
-    const state = { ...createSession("freebet"), hand: hand("J", "Q", "6") };
-    expect(rankHandInfo("J", "Q").pair).toBe(false);
-    expect(() =>
-      sessionReducer(state, { type: "answer", action: "Split" }),
-    ).toThrow();
-    expect(() =>
-      sessionReducer(state, { type: "answer", action: "Surrender" }),
-    ).toThrow();
+
+  it.each(["reset", "mode"])(
+    "clears scores on %s and preserves filters",
+    (type) => {
+      const state = makeSession({
+        filters: ["pairs"],
+        handNumber: 5,
+        answeredCount: 4,
+        correctCount: 3,
+      });
+      expect(
+        sessionReducer(state, { type, mode: "h17", hand: makeHand() }),
+      ).toMatchObject({
+        handNumber: 1,
+        answeredCount: 0,
+        correctCount: 0,
+        answer: null,
+        filters: ["pairs"],
+        mode: type === "mode" ? "h17" : "s17",
+      });
+    },
+  );
+
+  it("changes filters without clearing scores", () => {
+    const state = makeSession({ answeredCount: 2, correctCount: 1 });
+    expect(
+      sessionReducer(state, {
+        type: "filters",
+        filters: ["soft"],
+        hand: makeHand("A", "7", "6"),
+      }),
+    ).toMatchObject({
+      filters: ["soft"],
+      handNumber: 2,
+      answeredCount: 2,
+      correctCount: 1,
+    });
   });
-  it("draws only selected categories and skips naturals", () => {
-    for (const type of ["hard", "soft", "pairs"]) {
-      for (let i = 0; i < 100; i++) {
-        const { a, b } = drawHand([type]);
+
+  it.each([
+    ["Split", "Only cards of the same rank can be split."],
+    ["Surrender", "Surrender is unavailable in Free Bet mode."],
+    ["invalid", "Unknown action."],
+  ])("rejects unavailable action %s", (action, message) => {
+    const state = makeSession({
+      mode: "freebet",
+      hand: makeHand("J", "Q", "6"),
+    });
+    expect(() => sessionReducer(state, { type: "answer", action })).toThrow(
+      message,
+    );
+  });
+
+  it("distinguishes matching ranks from matching values", () => {
+    expect(rankHandInfo("J", "Q")).toEqual({
+      total: 20,
+      soft: false,
+      pair: false,
+    });
+    expect(rankHandInfo("J", "J").pair).toBe(true);
+    expect(rankHandInfo("A", "A")).toEqual({
+      total: 12,
+      soft: true,
+      pair: true,
+    });
+  });
+
+  it("exposes the current hand and enabled categories", () => {
+    expect(readHand(makeSession())).toMatchObject({
+      player: ["10", "6"],
+      dealer: "10",
+      category: "hard",
+      enabledTypes: ["hard", "soft", "pairs"],
+      answered: false,
+    });
+    expect(readHand(makeSession({ filters: ["hard"] })).enabledTypes).toEqual([
+      "hard",
+    ]);
+  });
+
+  it.each(["invalid", "toString"])("rejects unknown mode %s", (mode) => {
+    expect(() =>
+      sessionReducer(makeSession(), { type: "mode", mode, hand: makeHand() }),
+    ).toThrow("Unknown rule mode.");
+  });
+
+  it("rejects unknown events", () => {
+    expect(() => sessionReducer(makeSession(), { type: "invalid" })).toThrow(
+      "Unknown session event.",
+    );
+  });
+});
+
+describe("hand generation", () => {
+  it.each(["hard", "soft", "pairs"])(
+    "draws only %s hands and excludes naturals",
+    (type) => {
+      // A two-card pool has at most 13² entries; these samples visit every slot.
+      for (let index = 0; index < 169; index++) {
+        const { a, b } = drawHand([type], () => index / 169);
         const info = rankHandInfo(a.rank, b.rank);
         expect(info.total).not.toBe(21);
-        expect(info.pair ? "pairs" : info.soft ? "soft" : "hard").toBe(type);
+        if (type === "pairs") expect(a.rank).toBe(b.rank);
+        else {
+          expect(a.rank).not.toBe(b.rank);
+          expect(info.soft).toBe(type === "soft");
+        }
       }
-    }
+    },
+  );
+
+  it("treats empty filters as all categories", () => {
+    expect(drawHand([], () => 0)).toEqual(drawHand(undefined, () => 0));
   });
-  it("preserves rule-specific strategy decisions", () => {
-    expect(strategy(11, 7, 2, "s17")).toBe("Stand");
-    expect(strategy(11, 7, 2, "h17")).toBe("Double");
-    expect(strategy(5, 4, 11, "freebet")).toBe("Double");
-    expect(strategy(8, 8, 11, "h17")).toBe("Surrender");
-    expect(strategy(8, 8, 11, "s17")).toBe("Split");
-    for (const mode of ["s17", "h17", "freebet"]) {
-      for (let a = 2; a <= 11; a++)
-        for (let b = 2; b <= 11; b++)
-          for (let d = 2; d <= 11; d++) {
-            if (a + b === 21) continue;
-            expect(actions).toContain(strategy(a, b, d, mode));
-          }
-    }
+
+  it("creates a fresh session with the requested rules and filters", () => {
+    const state = createSession("h17", ["pairs"]);
+    expect(state).toMatchObject({
+      mode: "h17",
+      filters: ["pairs"],
+      handNumber: 1,
+      answeredCount: 0,
+      correctCount: 0,
+      answer: null,
+    });
+    expect(state.hand.a.rank).toBe(state.hand.b.rank);
   });
 });

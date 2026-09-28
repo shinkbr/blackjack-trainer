@@ -1,73 +1,63 @@
+import { createCard, ranks, rankValue, suits } from "./cards.js";
 import { handInfo, strategy, ruleModes } from "./strategy.js";
 export const actions = ["Hit", "Stand", "Double", "Split", "Surrender"];
 export const handTypes = ["hard", "soft", "pairs"];
-const suits = ["♠", "♥", "♦", "♣"];
-const random = (n) => Math.floor(Math.random() * n);
-function value(rank) {
-  return rank === "A" ? 11 : ["J", "Q", "K"].includes(rank) ? 10 : Number(rank);
+function pickRandom(items, random) {
+  return items[Math.floor(random() * items.length)];
 }
-function randomCard() {
-  const rank = [
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "J",
-    "Q",
-    "K",
-    "A",
-  ][random(13)];
-  return { rank, suit: suits[random(4)], value: value(rank) };
+
+export function rankHandInfo(a, b) {
+  return { ...handInfo(rankValue(a), rankValue(b)), pair: a === b };
 }
-function rankHandInfo(a, b) {
-  return { ...handInfo(value(a), value(b)), pair: a === b };
-}
-function category(a, b) {
+
+export function category(a, b) {
   const info = rankHandInfo(a, b);
-  return info.pair ? "pairs" : info.soft ? "soft" : "hard";
+  if (info.pair) return "pairs";
+  return info.soft ? "soft" : "hard";
 }
-const handPools = { hard: [], soft: [], pairs: [] };
-const ranks = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-  "A",
-];
-for (const a of ranks)
-  for (const b of ranks) {
-    if (handInfo(value(a), value(b)).total !== 21)
-      handPools[category(a, b)].push([a, b]);
+
+function createHandPools() {
+  const pools = { hard: [], soft: [], pairs: [] };
+  for (const a of ranks) {
+    for (const b of ranks) {
+      if (rankHandInfo(a, b).total !== 21) {
+        pools[category(a, b)].push([a, b]);
+      }
+    }
   }
-function drawHand(types) {
-  const type = types[random(types.length)];
-  const pool = handPools[type];
-  const [a, b] = pool[random(pool.length)];
+  return pools;
+}
+
+const handPools = createHandPools();
+
+export function drawHand(types = handTypes, random = Math.random) {
+  const enabledTypes = types.length ? types : handTypes;
+  const type = pickRandom(enabledTypes, random);
+  const [a, b] = pickRandom(handPools[type], random);
   return {
-    a: { rank: a, value: value(a), suit: suits[random(4)] },
-    b: { rank: b, value: value(b), suit: suits[random(4)] },
-    dealer: randomCard(),
+    a: createCard(a, pickRandom(suits, random)),
+    b: createCard(b, pickRandom(suits, random)),
+    dealer: createCard(pickRandom(ranks, random), pickRandom(suits, random)),
   };
+}
+
+// Keep action availability consistent across buttons, shortcuts, and tools.
+export function actionUnavailableReason(action, { pair, mode }) {
+  if (!actions.includes(action)) return "Unknown action.";
+  if (action === "Split" && !pair) {
+    return "Only cards of the same rank can be split.";
+  }
+  if (action === "Surrender" && mode === "freebet") {
+    return "Surrender is unavailable in Free Bet mode.";
+  }
+  return null;
 }
 
 export function createSession(mode = "s17", filters = []) {
   return {
     mode,
     filters,
-    hand: drawHand(filters.length ? filters : handTypes),
+    hand: drawHand(filters),
     handNumber: 1,
     answeredCount: 0,
     correctCount: 0,
@@ -107,7 +97,8 @@ export function sessionReducer(state, event) {
         answer: null,
       };
     case "mode":
-      if (!ruleModes[event.mode]) throw new Error("Unknown rule mode.");
+      if (!Object.hasOwn(ruleModes, event.mode))
+        throw new Error("Unknown rule mode.");
       return {
         ...sessionReducer(state, { type: "reset", hand: event.hand }),
         mode: event.mode,
@@ -120,13 +111,13 @@ export function sessionReducer(state, event) {
     case "answer": {
       const { hand, mode } = state;
       const info = rankHandInfo(hand.a.rank, hand.b.rank);
-      if (!actions.includes(event.action)) throw new Error("Unknown action.");
+      const unavailableReason = actionUnavailableReason(event.action, {
+        ...info,
+        mode,
+      });
+      if (unavailableReason) throw new Error(unavailableReason);
       if (state.answer)
         throw new Error("Deal the next hand before answering again.");
-      if (event.action === "Split" && !info.pair)
-        throw new Error("Only cards of the same rank can be split.");
-      if (event.action === "Surrender" && mode === "freebet")
-        throw new Error("Surrender is unavailable in Free Bet mode.");
       const correctAction = strategy(
         hand.a.value,
         hand.b.value,
@@ -146,4 +137,3 @@ export function sessionReducer(state, event) {
       throw new Error("Unknown session event.");
   }
 }
-export { drawHand, rankHandInfo, category };

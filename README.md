@@ -33,9 +33,11 @@ The deployed site is available at <https://shinkbr.github.io/blackjack-trainer/>
 ## Code
 
 - `src/App.jsx` and `src/components/`: declarative interface and strategy charts.
-- `src/usePractice.js`: React session state, keyboard/focus behavior, and optional browser Model Context tools.
+- `src/usePractice.js`: React session state and keyboard/focus behavior.
+- `src/modelContext.js`: optional browser Model Context tool registration and cleanup.
+- `src/cards.js`: shared card ranks, suits, and values.
 - `src/game.js`: card generation and session transitions.
 - `src/strategy.js`: rule tables and strategy decisions.
-- `tests/`: strategy, session, interaction, and browser-tool regression checks.
+- `tests/`: focused strategy, session, interaction, and browser-tool regression checks. UI tests use fixed hands; hand-generation tests inject a deterministic random source.
 
 Licensed under the [MIT license](LICENSE).

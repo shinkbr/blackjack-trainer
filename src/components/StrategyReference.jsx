@@ -37,71 +37,69 @@ export default function StrategyReference({ mode }) {
           {free && key === "surrender" ? (
             <p>Surrender is not available in Free Bet mode.</p>
           ) : (
-            <>
-              <div
-                className="strategy-scroll"
-                tabIndex={0}
-                role="region"
-                aria-label={`${title} strategy table`}
-              >
-                <table className="strategy-grid">
-                  <caption className="visually-hidden">
-                    {title} against dealer upcard
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Your hand</th>
-                      {upcards.map((card) => (
-                        <th key={card} scope="col">
-                          {card}
-                        </th>
+            <div
+              className="strategy-scroll"
+              tabIndex={0}
+              role="region"
+              aria-label={`${title} strategy table`}
+            >
+              <table className="strategy-grid">
+                <caption className="visually-hidden">
+                  {title} against dealer upcard
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Your hand</th>
+                    {upcards.map((card) => (
+                      <th key={card} scope="col">
+                        {card}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tables[key].map(([label, codes]) => (
+                    <tr key={label}>
+                      <th scope="row">{label}</th>
+                      {[...codes].map((code, index) => (
+                        <StrategyCell
+                          key={upcards[index]}
+                          code={code}
+                          section={key}
+                          free={free}
+                        />
                       ))}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {tables[key].map(([label, codes]) => (
-                      <tr key={label}>
-                        <th scope="row">{label}</th>
-                        {[...codes].map((code, i) => {
-                          const fd =
-                            free &&
-                            code === "D" &&
-                            (key === "hard" || key === "pairs");
-                          const fp = free && code === "P";
-                          const shown = fd
-                            ? "FD"
-                            : fp
-                              ? "FP"
-                              : code === "-"
-                                ? "—"
-                                : code;
-                          const name = fd
-                            ? "Free double"
-                            : fp
-                              ? "Free split"
-                              : code === "-"
-                                ? "Use hard or soft table"
-                                : free && code === "D"
-                                  ? "Paid double"
-                                  : actionNames[code];
-                          return (
-                            <td
-                              key={i}
-                              className={`move-${code === "-" ? "none" : code}`}
-                            >
-                              <abbr title={name}>{shown}</abbr>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       ))}
     </section>
+  );
+}
+
+function StrategyCell({ code, section, free }) {
+  let label = code;
+  let description = actionNames[code];
+
+  if (code === "-") {
+    label = "—";
+    description = "Use hard or soft table";
+  } else if (free && code === "P") {
+    label = "FP";
+    description = "Free split";
+  } else if (free && code === "D") {
+    const freeDouble = section === "hard" || section === "pairs";
+    label = freeDouble ? "FD" : "D";
+    description = freeDouble ? "Free double" : "Paid double";
+  }
+
+  return (
+    <td className={`move-${code === "-" ? "none" : code}`}>
+      <abbr title={description}>{label}</abbr>
+    </td>
   );
 }

@@ -14,9 +14,9 @@ const ruleModes = {
   freebet: { name: "Free Bet Blackjack", dealer: "hits soft 17" },
 };
 function strategyTables(mode = "s17") {
-  if (!ruleModes[mode]) throw new Error("Unknown rule mode.");
-  const h17 = mode === "h17",
-    free = mode === "freebet";
+  if (!Object.hasOwn(ruleModes, mode)) throw new Error("Unknown rule mode.");
+  const h17 = mode === "h17";
+  const free = mode === "freebet";
   const hard = [
     ["17-20", "SSSSSSSSSS"],
     ["16", "SSSSSHHHHH"],
@@ -68,21 +68,21 @@ const actionNames = {
   R: "Surrender",
 };
 function strategy(a, b, d, mode = "s17", pair = a === b) {
-  const tables = strategyTables(mode),
-    { total, soft } = handInfo(a, b),
-    col = d - 2;
+  const tables = strategyTables(mode);
+  const { total, soft } = handInfo(a, b);
+  const column = d - 2;
   if (!soft) {
-    const row = tables.surrender.find((r) => Number(r[0]) === total);
+    const row = tables.surrender.find(([label]) => Number(label) === total);
     if (
       row &&
-      row[1][col] === "R" &&
+      row[1][column] === "R" &&
       !(pair && a === 8 && !(mode === "h17" && d === 11))
     )
       return "Surrender";
   }
   if (pair) {
     const key = a === 11 ? "AA" : a === 10 ? "TT" : `${a}${a}`;
-    const code = tables.pairs.find((r) => r[0] === key)[1][col];
+    const code = tables.pairs.find(([label]) => label === key)[1][column];
     if (code !== "-") return actionNames[code];
   }
   if (soft) {
@@ -90,11 +90,11 @@ function strategy(a, b, d, mode = "s17", pair = a === b) {
       return mode === "h17" && total === 19 && d === 6 ? "Double" : "Stand";
     if (total === 12) return "Hit";
     return actionNames[
-      tables.soft.find((r) => r[0] === `A${total - 11}`)[1][col]
+      tables.soft.find(([label]) => label === `A${total - 11}`)[1][column]
     ];
   }
   const key = total >= 17 ? "17-20" : total <= 8 ? "2-8" : String(total);
-  return actionNames[tables.hard.find((r) => r[0] === key)[1][col]];
+  return actionNames[tables.hard.find(([label]) => label === key)[1][column]];
 }
 
 export { handInfo, strategy, strategyTables, ruleModes, actionNames };
