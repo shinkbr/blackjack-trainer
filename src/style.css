@@ -81,15 +81,6 @@ h1 {
   margin: 0;
   font-size: 15px;
 }
-.rule-chip {
-  font-size: 13px;
-  white-space: nowrap;
-  padding-bottom: 3px;
-}
-.rule-chip span {
-  padding: 0 6px;
-  color: #7f9185;
-}
 .table {
   background: radial-gradient(
     ellipse at 50% 40%,
@@ -401,10 +392,6 @@ details a {
   }
   .intro p:not(.eyebrow) {
     font-size: 14px;
-  }
-  .rule-chip {
-    margin-top: 16px;
-    font-size: 12px;
   }
   .table {
     padding: 17px 16px;
@@ -798,9 +785,6 @@ footer details {
   }
   .actions strong {
     font-size: 15px;
-  }
-  .rule-chip {
-    white-space: normal;
   }
   .table-bottom {
     line-height: 1.7;

@@ -1,5 +1,4 @@
 import { actions, rankHandInfo } from "./game.js";
-import { ruleModes } from "./strategy.js";
 import { rulesDescription } from "./rules.js";
 import usePractice from "./usePractice.js";
 import Card from "./components/Card.jsx";
@@ -10,7 +9,6 @@ export default function App() {
     usePractice();
   const { hand, answer } = state;
   const info = rankHandInfo(hand.a.rank, hand.b.rank);
-  const mode = ruleModes[state.mode];
   const free = state.mode === "freebet";
   const freeDouble = free && !info.soft && info.total >= 9 && info.total <= 11;
   const freeSplit = free && info.pair && hand.a.value !== 10;
@@ -76,10 +74,6 @@ export default function App() {
           <h1>Make the right move.</h1>
           <p>Choose the best play against the dealer’s upcard.</p>
         </div>
-        <div
-          className="rule-chip"
-          id="rule-chip"
-        >{`6 decks · Dealer ${mode.dealer}`}</div>
       </section>
       <section className="mode-controls">
         <label htmlFor="rule-mode">Table rules</label>
@@ -92,7 +86,7 @@ export default function App() {
           <option value="h17">Standard H17</option>
           <option value="freebet">Free Bet Blackjack (H17)</option>
         </select>
-        <span id="mode-summary">Switching modes resets the count.</span>
+        <span id="mode-summary">Switching rules resets the count.</span>
       </section>
       <section className="focus-controls" aria-label="Practice hand types">
         <fieldset>
@@ -182,9 +176,9 @@ export default function App() {
           </div>
         </div>
         <div className="table-bottom" id="table-rule-label">
-          {free
-            ? "FREE DOUBLES: HARD 9–11 ◆ FREE SPLITS: EXCEPT TENS ◆ PUSH 22"
-            : "DOUBLE AFTER SPLIT ALLOWED ◆ LATE SURRENDER"}
+          {state.mode === "s17"
+            ? "DEALER MUST STAND ON 17"
+            : "DEALER MUST HIT ON SOFT 17"}
         </div>
       </section>
       <section className="decision" aria-label="Choose your action">
