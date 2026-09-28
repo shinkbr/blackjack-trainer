@@ -10,6 +10,8 @@ export default function PracticeFooter({ mode }) {
       <details open>
         <summary>Table rules & strategy reference</summary>
         <p id="rules-description">{rulesDescription(mode)}</p>
+        <StrategyReference mode={mode} />
+        <p>Never take insurance or "even money".</p>
         <p id="house-edge">{`The house edge under this strategy is ${houseEdges[mode]} %.`}</p>
         <p id="strategy-source">
           Reference:{" "}
@@ -23,7 +25,6 @@ export default function PracticeFooter({ mode }) {
           </a>
           .
         </p>
-        <StrategyReference mode={mode} />
       </details>
       <a
         className="footer-link"
