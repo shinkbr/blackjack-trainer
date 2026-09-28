@@ -108,32 +108,35 @@ export function sessionReducer(state, event) {
         ...sessionReducer(state, { type: "deal", hand: event.hand }),
         filters: event.filters,
       };
-    case "answer": {
-      const { hand, mode } = state;
-      const info = rankHandInfo(hand.a.rank, hand.b.rank);
-      const unavailableReason = actionUnavailableReason(event.action, {
-        ...info,
-        mode,
-      });
-      if (unavailableReason) throw new Error(unavailableReason);
-      if (state.answer)
-        throw new Error("Deal the next hand before answering again.");
-      const correctAction = strategy(
-        hand.a.value,
-        hand.b.value,
-        hand.dealer.value,
-        mode,
-        info.pair,
-      );
-      const isCorrect = event.action === correctAction;
-      return {
-        ...state,
-        answer: { chosen: event.action, correctAction, isCorrect },
-        answeredCount: state.answeredCount + 1,
-        correctCount: state.correctCount + Number(isCorrect),
-      };
-    }
+    case "answer":
+      return answerHand(state, event.action);
     default:
       throw new Error("Unknown session event.");
   }
+}
+
+function answerHand(state, action) {
+  const { hand, mode } = state;
+  const info = rankHandInfo(hand.a.rank, hand.b.rank);
+  const unavailableReason = actionUnavailableReason(action, {
+    ...info,
+    mode,
+  });
+  if (unavailableReason) throw new Error(unavailableReason);
+  if (state.answer)
+    throw new Error("Deal the next hand before answering again.");
+  const correctAction = strategy(
+    hand.a.value,
+    hand.b.value,
+    hand.dealer.value,
+    mode,
+    info.pair,
+  );
+  const isCorrect = action === correctAction;
+  return {
+    ...state,
+    answer: { chosen: action, correctAction, isCorrect },
+    answeredCount: state.answeredCount + 1,
+    correctCount: state.correctCount + Number(isCorrect),
+  };
 }

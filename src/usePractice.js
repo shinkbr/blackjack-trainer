@@ -5,15 +5,9 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  actions,
-  createSession,
-  drawHand,
-  actionUnavailableReason,
-  readHand,
-  sessionReducer,
-} from "./game.js";
+import { createSession, drawHand, readHand, sessionReducer } from "./game.js";
 
+import usePracticeKeyboard from "./usePracticeKeyboard.js";
 import { registerPracticeTools } from "./modelContext.js";
 
 export default function usePractice() {
@@ -53,28 +47,7 @@ export default function usePractice() {
       focusFirstAction.current = false;
     }
   }, [state.answer]);
-  useEffect(() => {
-    function onKeyDown(event) {
-      if (
-        event.repeat ||
-        event.ctrlKey ||
-        event.metaKey ||
-        event.altKey ||
-        event.target?.isContentEditable ||
-        /INPUT|TEXTAREA|SELECT/.test(event.target?.tagName)
-      )
-        return;
-      if (!current.current.answer && /^[1-5]$/.test(event.key)) {
-        const action = actions[Number(event.key) - 1];
-        const hand = readHand(current.current);
-        if (actionUnavailableReason(action, hand)) return;
-        event.preventDefault();
-        choose(action);
-      }
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [choose]);
+  usePracticeKeyboard(current, choose);
   useEffect(
     () =>
       registerPracticeTools(document.modelContext, {
@@ -84,15 +57,31 @@ export default function usePractice() {
       }),
     [choose, deal],
   );
+  const nextHand = useCallback(() => {
+    focusFirstAction.current = true;
+    deal();
+  }, [deal]);
+  const resetCount = useCallback(() => deal("reset"), [deal]);
+  const changeMode = useCallback((mode) => deal("mode", { mode }), [deal]);
+  const toggleFilter = useCallback(
+    (type) => {
+      const { filters } = current.current;
+      const nextFilters = filters.includes(type)
+        ? filters.filter((filter) => filter !== type)
+        : [...filters, type];
+      return deal("filters", { filters: nextFilters });
+    },
+    [deal],
+  );
+
   return {
     state,
     choose,
-    deal,
+    nextHand,
+    resetCount,
+    changeMode,
+    toggleFilter,
     nextRef,
     firstActionRef,
-    nextHand: () => {
-      focusFirstAction.current = true;
-      deal();
-    },
   };
 }
