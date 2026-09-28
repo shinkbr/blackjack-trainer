@@ -96,5 +96,5 @@ function strategy(a, b, d, mode = "s17", pair = a === b) {
   const key = total >= 17 ? "17-20" : total <= 8 ? "2-8" : String(total);
   return actionNames[tables.hard.find((r) => r[0] === key)[1][col]];
 }
-if (typeof module !== "undefined")
-  module.exports = { handInfo, strategy, strategyTables, ruleModes };
+
+export { handInfo, strategy, strategyTables, ruleModes, actionNames };
