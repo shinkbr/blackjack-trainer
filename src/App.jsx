@@ -244,7 +244,7 @@ export default function App() {
         </div>
       </section>
       <footer>
-        <details>
+        <details open>
           <summary>Table rules & strategy reference</summary>
           <p id="rules-description">{rulesDescription(state.mode)}</p>
           <p id="house-edge">{`The house edge under this strategy is ${{ s17: "0.28", h17: "0.47", freebet: "1.04" }[state.mode]} %.`}</p>
