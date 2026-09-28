@@ -24,6 +24,12 @@ pnpm preview
 
 Deploy the generated `dist/` directory to a static host. Asset URLs are relative, supporting hosting under a subdirectory. The source `index.html` requires Vite; do not open it directly as a file.
 
+## GitHub Pages
+
+In the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. The workflow in `.github/workflows/deploy.yml` installs dependencies with the pinned pnpm version, runs tests, builds the site, and deploys `dist/` on pushes to `main`. You can also run it manually from the Actions tab with `main` selected.
+
+The deployed site is available at <https://shinkbr.github.io/blackjack-trainer/> after the first successful deployment.
+
 ## Code
 
 - `src/App.jsx` and `src/components/`: declarative interface and strategy charts.
