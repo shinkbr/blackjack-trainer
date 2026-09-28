@@ -1,4 +1,4 @@
-# Blackjack Training
+# Blackjack Trainer
 
 A React 19.2.8 practice table for initial-hand blackjack basic strategy. Includes S17, H17, and Free Bet modes, category filters, keyboard shortcuts, session accuracy, and strategy reference charts.
 
