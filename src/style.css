@@ -196,17 +196,16 @@ h1 {
 .player .cards .card:last-child {
   transform: rotate(5deg);
 }
-.table-bottom {
+.table-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   text-align: center;
+}
+#table-rule-label {
   color: #9cb9aa;
   font-size: 10px;
   letter-spacing: 1.5px;
-  margin-top: 21px;
-}
-.table-bottom span {
-  color: #b6aa7a;
-  margin: 0 12px;
-  font-size: 8px;
 }
 .decision {
   margin-top: 24px;
@@ -409,12 +408,9 @@ details a {
   .table-divider {
     margin: 18px auto;
   }
-  .table-bottom {
+  #table-rule-label {
     font-size: 8px;
     letter-spacing: 0.7px;
-  }
-  .table-bottom span {
-    margin: 0 6px;
   }
   .actions {
     grid-template-columns: repeat(6, 1fr);
@@ -785,8 +781,5 @@ footer details {
   }
   .actions strong {
     font-size: 15px;
-  }
-  .table-bottom {
-    line-height: 1.7;
   }
 }

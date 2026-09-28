@@ -159,7 +159,14 @@ export default function App() {
           </div>
         </div>
         <div className="table-divider">
-          <span>BLACKJACK PAYS 3 : 2</span>
+          <div className="table-rules">
+            <span>BLACKJACK PAYS 3 : 2</span>
+            <span id="table-rule-label">
+              {state.mode === "s17"
+                ? "DEALER MUST STAND ON 17"
+                : "DEALER MUST HIT ON SOFT 17"}
+            </span>
+          </div>
         </div>
         <div className="player">
           <h2>
@@ -174,11 +181,6 @@ export default function App() {
             <Card card={hand.a} />
             <Card card={hand.b} />
           </div>
-        </div>
-        <div className="table-bottom" id="table-rule-label">
-          {state.mode === "s17"
-            ? "DEALER MUST STAND ON 17"
-            : "DEALER MUST HIT ON SOFT 17"}
         </div>
       </section>
       <section className="decision" aria-label="Choose your action">
