@@ -37,7 +37,7 @@ export default function PracticeTable({ state, onReset }) {
           <span>BLACKJACK PAYS 3 : 2</span>
           <span id="table-rule-label">
             {state.mode === "s17"
-              ? "DEALER MUST STAND ON 17"
+              ? "DEALER MUST STAND ON ALL 17"
               : "DEALER MUST HIT ON SOFT 17"}
           </span>
         </div>
